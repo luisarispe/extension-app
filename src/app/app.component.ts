@@ -6,26 +6,37 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
-  title = 'extension-app';
-  color = '#ffffff';
-  ngOnInit(): void {
-    chrome.storage.sync.get('color', ({ color }) => {
-      this.color = color;
+  constructor() {}
+
+  ngOnInit(): void {}
+
+  async startListening() {
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
     });
-  }
-  public colorize() {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.scripting.executeScript({
-        target: { tabId: tabs[0].id! },
-        func: updateBackgroundColor,
-        args: [this.color],
-      });
+    if (!tab.id) return;
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: startRecognition,
     });
-  }
-  public updateColor(color: string) {
-    chrome.storage.sync.set({ color });
   }
 }
 
-const updateBackgroundColor = (color: string) =>
-  (document.body.style.backgroundColor = color);
+function startRecognition() {
+  const tempWindow: any = window;
+
+  const recognition = new tempWindow.webkitSpeechRecognition();
+  recognition.lang = 'es-ES';
+
+  recognition.onresult = function (event: any) {
+    const transcript = event.results[0][0].transcript;
+    chrome.runtime.sendMessage({ command: transcript });
+  };
+
+  recognition.onerror = function (event: any) {
+    console.error('Error en la captura de voz:', event.error);
+  };
+
+  recognition.start();
+}

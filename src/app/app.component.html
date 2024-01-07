@@ -1,12 +1,4 @@
-<span
-  [style.color]="color"
-  [cpToggle]="true"
-  [cpDialogDisplay]="'inline'"
-  [cpPositionRelativeToArrow]="true"
-  [(colorPicker)]="color"
-  [cpOKButtonText]="'Apply'"
-  [cpOKButton]="true"
-  (colorPickerSelect)="colorize()"
-  (colorPickerChange)="updateColor($event)"
->
-</span>
+<body>
+  <button (click)="startListening()">Iniciar Escucha</button>
+  <div id="output"></div>
+</body>

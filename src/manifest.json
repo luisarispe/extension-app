@@ -10,5 +10,6 @@
     "service_worker": "background.js",
     "type": "module"
   },
-  "permissions": ["activeTab", "webNavigation", "scripting", "storage"]
+  "permissions": ["activeTab", "scripting", "speechRecognition"],
+  "host_permissions": ["https://google.com"]
 }
